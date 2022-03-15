@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>numberBasebaLl</title>
+</head>
+<body>
+  <form action="">
+    <input type="text" placeholder="숫자를 입력하세요">
+    <button>click</button>
+  </form>
+
+  <div id="result"></div>
+  
+  <script>
+    $form = document.querySelector('form');
+    $input = document.querySelector('input');
+    $button = document.querySelector('button');
+    $result = document.querySelector('#result');
+
+    //피셔 에이츨 셔플
+    const suffleNumber = Array(9).fill().map((v,i)=>{return i});
+    const resultNumber = [];
+
+    for(let i =0;i<4; i++){
+      resultNumber.push(suffleNumber.splice(Math.floor(Math.random()*suffleNumber.length),1));
+    }
+
+    //정답
+    //console.log(resultNumber);
+
+    function checkAnswer(input){
+      let strikeCount =0;
+      let ballCount =0;
+
+      if(resultNumber.join('') === input){$result.append('homerun')}
+
+      for(let i =0; i <4 ; i++){
+        if(input.includes(resultNumber[i])){
+          if(input.indexOf(resultNumber[i]) === i){
+            ++strikeCount;
+          }else{
+            ++ballCount;
+          }
+        }
+      }
+      $result.append(`스트라이크 : ${strikeCount}  볼 : ${ballCount}`, document.createElement('br'));
+      //console.log(strikeCount,ballCount);
+    }
+
+    const tries = [];
+    function checkInput(input) { // 3146,   314,  3144
+      if (input.length !== 4) { // 길이는 4가 아닌가
+        $input.value = '';
+        return alert('4자리 숫자를 입력해 주세요.');
+      }
+      if (new Set(input).size !== 4) { // 중복된 숫자가 있는가
+        $input.value = '';
+        return alert('중복되지 않게 입력해 주세요.');
+      }
+      if (tries.includes(input)) { // 이미 시도한 값은 아닌가
+        $input.value = '';
+        return alert('이미 시도한 값입니다.');
+      }
+      tries.push(input);
+      return true;
+    } // 검사하는 코드
+
+    $form.addEventListener('submit',(event)=>{
+      event.preventDefault();
+      const userNumber = $input.value;
+      if(!checkInput(userNumber)) return;
+      checkAnswer(userNumber);
+      $input.value = '';
+
+    })
+  </script>
+</body>
+</html>
