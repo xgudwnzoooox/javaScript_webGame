@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>rsp</title>
+</head>
+<body>
+  <div id="rsp">바위</div>
+  <div id="rspButton">
+    <button id = 'rock'>바위</button>
+    <button id = 'scissors'>가위</button>
+    <button id="paper">보</button>
+  </div>
+  <div id="result">
+    
+  </div>
+
+  <script>
+    const $rsp = document.querySelector('#rsp');
+    const $rock = document.querySelector('#rock');
+    const $scissors = document.querySelector('#scissors');
+    const $paper = document.querySelector('#paper');
+    const $rspButton = document.querySelector('#rspButton');
+    const $result = document.querySelector('#result');
+
+    const rspList = ['바위','가위','보'];
+    let flag = true;
+
+    function changeComputerHand(){
+        $rsp.textContent = rspList[((rspList.indexOf($rsp.textContent)+1)%3)];
+    }
+
+    function checkResult(event){
+      let userChoose = event.target.textContent;
+      //console.log('유저',userChoose);
+      if( (userChoose === '바위' && $rsp.textContent === '가위') || (userChoose === '가위' && $rsp.textContent === '보') || (userChoose === '보' && $rsp.textContent === '바위')  ){//승리
+        $result.textContent = "유저 승리"
+      }else if (userChoose === $rsp.textContent) {//무승부
+        $result.textContent = "무승부"
+      } else {//페배
+        $result.textContent = "유저 패배"
+      }
+    }
+
+    let intervalId = setInterval(changeComputerHand,500);
+
+    $rspButton.addEventListener('click', callack);
+
+    function callack(event){
+      if(!flag)return;
+
+      flag = false;
+      clearInterval(intervalId);
+      checkResult(event);
+      setTimeout(()=>{
+        changeComputerHand();
+        flag = true;
+        intervalId = setInterval(changeComputerHand,500);
+      },1000)
+    }
+
+  </script>
+</body>
+</html>
