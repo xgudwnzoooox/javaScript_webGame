@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.`">
+  <title>tic-tac-toc</title>
+
+  <style>
+    /* table{
+      border-collapse: collapse;
+    } */
+
+    td{
+      border: 1px solid black;
+      width: 130px;
+      height: 130px;
+      cursor: pointer;
+      text-align: center;
+      line-height: 130px;
+      font-size: 70px;
+    }
+
+  </style>
+</head>
+<body>
+  <!-- <table>
+    <tr>
+      <td></td>
+      <td></td>
+      <td></td>
+    </tr>
+    <tr>
+      <td></td>
+      <td></td>
+      <td></td>
+    </tr>
+    <tr>
+      <td></td>
+      <td></td>
+      <td></td>
+    </tr>
+  </table> -->
+
+  <script>
+    const $table = document.createElement('table');
+    const $result = document.createElement('div');
+    const row = [];
+    let turn = 'O';
+    let winnerIs = false;
+    let flag = true;
+    
+    function comChoose(){
+      
+      let randomNumber = Math.floor(Math.random()*row.flat().length);
+      row.flat()[randomNumber].textContent ? comChoose() : row.flat()[randomNumber].textContent = turn;
+      return row.flat()[randomNumber]
+    }
+    
+    
+    function checkResult(target){
+      const rowIndex = target.parentNode.rowIndex;
+      const cellIndex = target.cellIndex;
+
+      ///가로줄 검사
+      if(row[rowIndex][0].textContent === turn && 
+        row[rowIndex][1].textContent === turn && 
+        row[rowIndex][2].textContent === turn ){ 
+          winnerIs = true; 
+        }else if(
+          row[0][cellIndex].textContent === turn &&
+          row[1][cellIndex].textContent === turn &&
+          row[2][cellIndex].textContent === turn
+        ){ //세로줄 검사
+          winnerIs = true;
+        }else if(
+          row[0][0].textContent === turn &&
+          row[1][1].textContent === turn &&
+          row[2][2].textContent === turn
+        ){//왼쪽 대각성
+          winnerIs = true;
+        }else if(
+          row[2][0].textContent === turn &&
+          row[1][1].textContent === turn &&
+          row[0][2].textContent === turn
+        ){
+          winnerIs = true;
+        }
+      
+      if(winnerIs){
+        $result.textContent = `${turn === 'O' ? '유저' : '컴퓨터'} 승리!`;
+        flag = false;
+        return;
+      }else{
+        if(row.flat().every((cell) => cell.textContent)){//동점
+          $result.textContent = `동점!`;
+          flag = false;
+          return;
+        }else{//다음 차례
+          turn = turn === 'O' ? 'X' : 'O';
+        }
+      }
+        
+    }
+    
+    const callback = (event)=>{
+      if(!flag) return;
+      if(event.target.textContent) return;
+      
+      event.target.textContent = turn;
+      let target = event.target
+      checkResult(target);
+      
+      if((row.flat().every((cell) => cell.textContent)) || winnerIs)return;
+
+      let com = comChoose();
+      checkResult(com);
+    }
+
+    for(let i= 0; i<3; i++){
+      const $tr = document.createElement('tr');
+      const cell = [];
+      for(let j =0; j < 3; j++){
+        const $td = document.createElement('td');
+        cell.push($td);
+        $tr.append($td);
+      }
+      $table.append($tr);
+      row.push(cell);
+    }
+
+    document.body.append($table);
+    document.body.append($result);
+
+    $table.addEventListener('click',callback);
+  </script>
+</body>
+</html>
