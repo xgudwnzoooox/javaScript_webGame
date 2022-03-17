@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>responceCheck</title>
+  <style>
+    #container{
+      border: 1px solid black;
+      width: 400px;
+      height: 300px;
+      cursor: pointer;
+      line-height: 300px;
+      text-align: center;
+    }
+
+    #container.waiting{
+      background-color: yellow;
+    }
+    #container.ready{
+      background-color: lightcoral;
+    }
+    #container.start{
+      background-color: aqua;
+    }
+  </style>
+</head>
+<body>
+  <div id="container" class="waiting">시작할려면 클릭!</div>
+  <div id="result"></div>
+
+  <script>
+    const $container = document.querySelector('#container');
+    const $result = document.querySelector('#result');
+
+    let startTime;
+    let endTime;
+    let timeoutId;
+    const record = [];
+    let currentTime;
+    let average;
+
+    $container.addEventListener('click',(event)=>{
+      if(event.target.className === 'waiting'){
+        $container.textContent = '곧 바뀝니다.'
+        event.target.classList.remove('waiting');
+        event.target.classList.add('ready');
+        timeoutId = setTimeout(()=>{
+          $container.textContent = '누르세요!'
+          flag = true;
+          startTime = new Date();
+          event.target.classList.remove('ready');
+          event.target.classList.add('start');
+        },Math.floor((Math.random()*1000)+2000));
+
+      }else if(event.target.className === 'ready'){
+        clearTimeout(timeoutId)
+        $container.textContent = '성급하게 누름! 클릭해서 새로 시작!'
+        event.target.classList.remove('ready');
+        event.target.classList.add('waiting');
+      }else{
+        $container.textContent = '시작할려면 클릭!'
+        endTime = new Date();
+        event.target.classList.remove('start');
+        event.target.classList.add('waiting');
+        currentTime = (endTime-startTime)/1000;
+        record.push(currentTime);
+        average = (record.reduce((a,b)=>{return (a+b)},0))/record.length;
+        $result.textContent = `기록 : ${currentTime} 초,  평균 : ${average} 초`;
+
+        const recordSort = record.sort((a,b)=>{return (a-b)}).slice(0,5);
+        recordSort.forEach((v,i)=>{
+          $result.append(document.createElement('br'), ` ${i+1}위 : ${v} 초`);
+        })
+
+
+      }
+    });
+  </script>
+  
+</body>
+</html>
