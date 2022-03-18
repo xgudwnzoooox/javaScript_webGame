@@ -3,7 +3,6 @@
 <head>
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1.`">
   <title>tic-tac-toc</title>
 
   <style>
@@ -50,18 +49,71 @@
     let winnerIs = false;
     let flag = true;
     
+    function defendWin(){
+      turn = 'O';
+      
+      for(let i =0; i < row.flat().length; i++){
+        let checkCell = row.flat()[i];
+        if (checkCell.textContent !== '') continue;
+        
+        checkCell.textContent = turn;
+        check(checkCell);
+        checkCell.textContent = '';
+
+        //console.log(i, winnerIs);
+        if(winnerIs){//다음 차례에서 결정나면
+          winnerIs = false;
+          turn = 'X';
+          return checkCell;
+        }
+      }
+      turn = 'X';
+      return false;
+    }
+
+    function chooseWin(){
+      
+      for(let i =0; i < row.flat().length; i++){
+        let checkCell = row.flat()[i];
+        if (checkCell.textContent !== '') continue;
+        
+        checkCell.textContent = turn;
+        check(checkCell);
+        checkCell.textContent = '';
+
+        //console.log(i, winnerIs);
+        if(winnerIs){//다음 차례에서 결정나면
+          winnerIs = false;
+          return checkCell;
+        }
+      }
+      return false;
+    }
+    
     function comChoose(){
+      let AI = chooseWin();
+      if(!!AI){
+        AI.textContent = turn;
+        return AI
+      }
+
+      AI = defendWin();
+      if(!!AI){
+        AI.textContent = turn;
+        return AI
+      }
+      
+      
       
       let randomNumber = Math.floor(Math.random()*row.flat().length);
       row.flat()[randomNumber].textContent ? comChoose() : row.flat()[randomNumber].textContent = turn;
       return row.flat()[randomNumber]
     }
     
-    
-    function checkResult(target){
+    function check(target){
       const rowIndex = target.parentNode.rowIndex;
       const cellIndex = target.cellIndex;
-
+  
       ///가로줄 검사
       if(row[rowIndex][0].textContent === turn && 
         row[rowIndex][1].textContent === turn && 
@@ -86,8 +138,13 @@
         ){
           winnerIs = true;
         }
-      
-      if(winnerIs){
+    }
+    
+    
+    function checkResult(target){
+      check(target);
+
+      if(winnerIs){//승자가 결정됬을 때
         $result.textContent = `${turn === 'O' ? '유저' : '컴퓨터'} 승리!`;
         flag = false;
         return;
@@ -97,7 +154,14 @@
           flag = false;
           return;
         }else{//다음 차례
+          flag = false;
           turn = turn === 'O' ? 'X' : 'O';
+          if(turn === 'O') return;
+          
+          setTimeout(()=>{
+            checkResult(comChoose());
+            flag = true;
+          },500)
         }
       }
         
@@ -106,15 +170,10 @@
     const callback = (event)=>{
       if(!flag) return;
       if(event.target.textContent) return;
-      
+
       event.target.textContent = turn;
       let target = event.target
       checkResult(target);
-      
-      if((row.flat().every((cell) => cell.textContent)) || winnerIs)return;
-
-      let com = comChoose();
-      checkResult(com);
     }
 
     for(let i= 0; i<3; i++){
